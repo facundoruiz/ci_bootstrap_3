@@ -6,8 +6,13 @@
 		<p class="login-box-msg">Sign in to start your session</p>
 		<?php echo $form->open(); ?>
 			<?php echo $form->messages(); ?>
+<<<<<<< HEAD
 			<?php echo $form->bs3_text('Username', 'username', ENVIRONMENT==='development' ? 'webmaster' : ''); ?>
 			<?php echo $form->bs3_password('Password', 'password', ENVIRONMENT==='development' ? 'webmaster' : ''); ?>
+=======
+			<?php echo $form->bs3_text('Username', 'username', ENVIRONMENT==='development' ? 'admin' : ''); ?>
+			<?php echo $form->bs3_password('Password', 'password', ENVIRONMENT==='development' ? 'admin' : ''); ?>
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 			<div class="row">
 				<div class="col-xs-8">
 					<div class="checkbox">

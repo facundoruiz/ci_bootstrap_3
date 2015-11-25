@@ -80,11 +80,26 @@ class Cli extends MX_Controller {
 		$file_path = FCPATH.'sql/core/ion_auth.sql';
 		write_file($file_path, $backup);
 		echo 'Database saved to: '.$file_path.PHP_EOL;
+<<<<<<< HEAD
 		
 		// Ion Auth (for Admin Panel)
 		$prefs['tables'] = array('admin_groups', 'admin_login_attempts', 'admin_users', 'admin_users_groups');
 		$backup = $this->dbutil->backup($prefs);
 		$file_path = FCPATH.'sql/core/ion_auth_admin.sql';
+=======
+
+		// Demo - Cover Photos
+		$prefs['tables'] = array('cover_photos');
+		$backup = $this->dbutil->backup($prefs);
+		$file_path = FCPATH.'sql/demo/cover_photos.sql';
+		write_file($file_path, $backup);
+		echo 'Database saved to: '.$file_path.PHP_EOL;
+
+		// Demo - Blog
+		$prefs['tables'] = array('blog_posts', 'blog_categories', 'blog_tags', 'blog_post_tag_rel');
+		$backup = $this->dbutil->backup($prefs);
+		$file_path = FCPATH.'sql/demo/blog.sql';
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 		write_file($file_path, $backup);
 		echo 'Database saved to: '.$file_path.PHP_EOL;
 	}

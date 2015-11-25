@@ -8,7 +8,11 @@
 			<div class="user-panel" style="height:65px">
 				<div class="pull-left info" style="left:5px">
 					<p><?php echo $user->first_name; ?></p>
+<<<<<<< HEAD
 					<a href="panel/account"><i class="fa fa-circle text-success"></i> Online</a>
+=======
+					<a href="account"><i class="fa fa-circle text-success"></i> Online</a>
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 				</div>
 			</div>
 			<?php // (Optional) Add Search box here ?>

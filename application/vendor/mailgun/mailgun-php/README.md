@@ -22,12 +22,20 @@ composer and the Mailgun SDK.
 curl -sS https://getcomposer.org/installer | php
 
 # Add Mailgun as a dependency
+<<<<<<< HEAD
 php composer.phar require mailgun/mailgun-php:~1.7.2
+=======
+php composer.phar require mailgun/mailgun-php:~1.7.1
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 ``` 
 
 **For shared hosts without SSH access, check out our [Shared Host Instructions](SharedHostInstall.md).**
 
+<<<<<<< HEAD
 **Rather just download the files? [Library Download](https://9f67cbbd1116d8afb399-7760483f5d1e5f28c2d253278a2a5045.ssl.cf2.rackcdn.com/mailgun-php-1.7.2.zip).**
+=======
+**Rather just download the files? [Library Download](https://9f67cbbd1116d8afb399-7760483f5d1e5f28c2d253278a2a5045.ssl.cf2.rackcdn.com/mailgun-php-1.7.1.zip).**
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 
 Next, require Composer's autoloader, in your application, to automatically 
 load the Mailgun SDK in your project:

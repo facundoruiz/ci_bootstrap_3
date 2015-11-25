@@ -7,14 +7,18 @@ class Admin_Controller extends MY_Controller {
 
 	protected $mUsefulLinks = array();
 
+<<<<<<< HEAD
 	// Grocery CRUD or Image CRUD
 	protected $mCrud;
 	protected $mCrudUnsetFields;
 
+=======
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	// Constructor
 	public function __construct()
 	{
 		parent::__construct();
+<<<<<<< HEAD
 
 		// only login users can access Admin Panel
 		$this->verify_login();
@@ -90,10 +94,19 @@ class Admin_Controller extends MY_Controller {
 		{
 			$this->mCrud->callback_field($field, array($this, 'callback_color_picker'));
 		}
+=======
+
+		// only authorized user groups can access Admin Panel
+		$groups = array_keys($this->mSiteConfig['authorized_groups']);
+		$this->verify_auth($groups, 'admin/login');
+		
+		$this->mUsefulLinks = $this->mSiteConfig['useful_links'];
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	}
 
 	public function callback_color_picker($value = '', $primary_key = NULL, $field = NULL)
 	{
+<<<<<<< HEAD
 		$name = $field->name;
 		return "<input type='color' name='$name' value='$value' style='width:80px' />";
 	}
@@ -157,5 +170,15 @@ class Admin_Controller extends MY_Controller {
 		// display view
 		$this->mViewData['crud_output'] = $crud_data->output;
 		$this->render('crud');
+=======
+		// load skin according to user role
+		$config = $this->mSiteConfig['authorized_groups'][$this->mUserMainGroup];
+		$this->mViewData['body_class'] = $config['adminlte_skin'];
+
+		// additional view data
+		$this->mViewData['useful_links'] = $this->mUsefulLinks;
+
+		parent::render($view_file);
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	}
 }

@@ -4,7 +4,13 @@
         "firebase/php-jwt": "^3.0",
         "google/recaptcha": "~1.1",
         "league/csv": "^7.0",
+<<<<<<< HEAD
         "mailgun/mailgun-php": "1.8.*",
         "zircote/swagger-php": "^2.0"
+=======
+        "league/plates": "3.*",
+        "firebase/php-jwt": "^2.1",
+        "mailgun/mailgun-php": "1.7.*"
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
     }
 }

@@ -8,6 +8,11 @@ $baseDir = dirname($vendorDir);
 return array(
     'Mailgun\\Tests' => array($vendorDir . '/mailgun/mailgun-php/tests'),
     'Mailgun' => array($vendorDir . '/mailgun/mailgun-php/src'),
+<<<<<<< HEAD
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib'),
+=======
+    'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
+    'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 );

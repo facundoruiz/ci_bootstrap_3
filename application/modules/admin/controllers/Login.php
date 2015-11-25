@@ -25,7 +25,11 @@ class Login extends MY_Controller {
 				// login succeed
 				$messages = $this->ion_auth->messages();
 				$this->system_message->set_success($messages);
+<<<<<<< HEAD
 				redirect($this->mModule);
+=======
+				redirect('admin');
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 			}
 			else
 			{

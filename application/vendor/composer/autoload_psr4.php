@@ -6,9 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+<<<<<<< HEAD
     'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
     'Swagger\\' => array($vendorDir . '/zircote/swagger-php/src'),
     'React\\Promise\\' => array($vendorDir . '/react/promise/src'),
+=======
+    'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
     'ReCaptcha\\' => array($vendorDir . '/google/recaptcha/src/ReCaptcha'),
     'League\\Csv\\' => array($vendorDir . '/league/csv/src'),
     'GuzzleHttp\\Stream\\' => array($vendorDir . '/guzzlehttp/streams/src'),

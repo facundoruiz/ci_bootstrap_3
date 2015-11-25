@@ -10,10 +10,16 @@ This repository is developed upon the following tools:
 * [CodeIgniter](http://www.codeigniter.com/) (v3.1.3) - PHP framework
 * [CodeIgniter HMVC Extensions](https://bitbucket.org/wiredesignz/codeigniter-modular-extensions-hmvc) - modular structure by [wiredesignz](http://wiredesignz.co.nz/)
 * [codeigniter-base-model](https://github.com/jamierumbelow/codeigniter-base-model) - more advanced CRUD functions for models by [jamierumbelow](https://github.com/jamierumbelow)
+<<<<<<< HEAD
 * [codeigniter-restserver](https://github.com/chriskacerguis/codeigniter-restserver) - base setup for API module
 * [Ion Auth](http://benedmunds.com/ion_auth/) - authentication library for CodeIgniter by [Ben Edmunds](http://benedmunds.com/)
 * [Bootstrap](http://getbootstrap.com/) (v3.3.7) - popular frontend framework
 * [Grocery CRUD](http://www.grocerycrud.com/) (v1.5.8) - feature-rich library to build CRUD tables
+=======
+* [Ion Auth](http://benedmunds.com/ion_auth/) - authentication library for CodeIgniter by [Ben Edmunds](http://benedmunds.com/)
+* [Bootstrap](http://getbootstrap.com/) (v3.3.5) - popular frontend framework
+* [Grocery CRUD](http://www.grocerycrud.com/) (v1.5.2) - feature-rich library to build CRUD tables
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 * [Image CRUD](http://www.grocerycrud.com/image-crud) (v0.6) - CRUD library for image management
 * [AdminLTE](https://github.com/almasaeed2010/AdminLTE) (v2.3.11) - bootstrap theme for Admin Panel
 
@@ -101,8 +107,12 @@ application/                    --- Main CodeIgniter source files
         MY_Router.php           --- Required for HMVC extension
     helpers/                    --- Contains custom helper functions being used throughout this repo
     language/                   --- Preset language files
+<<<<<<< HEAD
     libraries/                  --- Custom libraries (e.g. Form Builder, System Message)
         MY_Email.php            --- Enhanced email library, includes work with Mailgun API
+=======
+    libraries/                  --- Custom libraries (e.g. Ion Auth, Form Builder, System Message)
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
     models/                     --- Sample model extending from MY_Model
     modules/                    --- Each module can be accessed by http://{base_url}/{module_name}/{module_controller}/, etc.
         admin/                  --- Module for Admin Panel
@@ -128,6 +138,10 @@ screenshots/                    --- Screenshot images for preview
 sql/                            --- MySQL files
     backup/                     --- Files which will be created when backup database from CLI
     core/                       --- Files contains core data (e.g. Ion Auth)
+<<<<<<< HEAD
+=======
+    demo/                       --- Files contains demo data
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
     latest.sql                  --- Latest version of all preset data
 src/                            --- Folder for non-public source files
     css/                        --- Custom CSS files append to each site

@@ -2,6 +2,7 @@
 
 namespace Mailgun\Messages;
 
+<<<<<<< HEAD
 use Mailgun\Constants\Api;
 use Mailgun\Constants\ExceptionMessages;
 use Mailgun\Messages\Exceptions\TooManyParameters;
@@ -45,6 +46,25 @@ class BatchMessage extends MessageBuilder{
      * @param string $workingDomain
      * @param boolean $autoSend
      */
+=======
+use Mailgun\Messages\MessageBuilder;
+use Mailgun\Messages\Exceptions\TooManyParameters;
+use Mailgun\Messages\Exceptions\MissingRequiredMIMEParameters;
+
+/*
+   This class is used for batch sending. See the official documentation
+   for usage instructions.
+*/
+
+class BatchMessage extends MessageBuilder{
+
+	private $batchRecipientAttributes;
+	private $autoSend;
+	private $restClient;
+	private $workingDomain;
+	private $messageIds = array();
+
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	public function __construct($restClient, $workingDomain, $autoSend){
 		$this->batchRecipientAttributes = array();
 		$this->autoSend = $autoSend;
@@ -53,6 +73,7 @@ class BatchMessage extends MessageBuilder{
 		$this->endpointUrl = $workingDomain . "/messages";
 	}
 
+<<<<<<< HEAD
     /**
      * @param string $headerName
      * @param string $address
@@ -65,6 +86,13 @@ class BatchMessage extends MessageBuilder{
 			if($this->counters['recipients'][$headerName] == Api::RECIPIENT_COUNT_LIMIT){
 				if($this->autoSend == false){
 					throw new TooManyParameters(ExceptionMessages::TOO_MANY_RECIPIENTS);
+=======
+	protected function addRecipient($headerName, $address, $variables){
+		if(array_key_exists($headerName, $this->counters['recipients'])){
+			if($this->counters['recipients'][$headerName] == RECIPIENT_COUNT_LIMIT){
+				if($this->autoSend == false){
+					throw new TooManyParameters(TOO_MANY_RECIPIENTS);
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 				}
 				$this->sendMessage();
 			}
@@ -91,17 +119,21 @@ class BatchMessage extends MessageBuilder{
 		$this->batchRecipientAttributes["$address"] = $variables;
 	}
 
+<<<<<<< HEAD
     /**
      * @param array $message
      * @param array $files
      * @throws MissingRequiredMIMEParameters
      */
+=======
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	public function sendMessage($message = array(), $files = array()){
 		if(count($message) < 1){
 			$message = $this->message;
 			$files = $this->files;
 		}
 		if(!array_key_exists("from", $message)){
+<<<<<<< HEAD
 			throw new MissingRequiredMIMEParameters(ExceptionMessages::EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
 		}
 		elseif(!array_key_exists("to", $message)){
@@ -112,6 +144,18 @@ class BatchMessage extends MessageBuilder{
 		}
 		elseif((!array_key_exists("text", $message) && !array_key_exists("html", $message))){
 			throw new MissingRequiredMIMEParameters(ExceptionMessages::EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
+=======
+			throw new MissingRequiredMIMEParameters(EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
+		}
+		elseif(!array_key_exists("to", $message)){
+			throw new MissingRequiredMIMEParameters(EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
+		}
+		elseif(!array_key_exists("subject", $message)){
+			throw new MissingRequiredMIMEParameters(EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
+		}
+		elseif((!array_key_exists("text", $message) && !array_key_exists("html", $message))){
+			throw new MissingRequiredMIMEParameters(EXCEPTION_MISSING_REQUIRED_MIME_PARAMETERS);
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 		}
 		else{
 			$message["recipient-variables"] = json_encode($this->batchRecipientAttributes);
@@ -125,6 +169,7 @@ class BatchMessage extends MessageBuilder{
 		}
 	}
 
+<<<<<<< HEAD
     /**
      * @throws MissingRequiredMIMEParameters
      */
@@ -135,6 +180,12 @@ class BatchMessage extends MessageBuilder{
     /**
      * @return string[]
      */
+=======
+	public function finalize(){
+		return $this->sendMessage();
+	}
+
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	public function getMessageIds(){
 		return $this->messageIds;
 	}

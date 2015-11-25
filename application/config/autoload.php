@@ -63,7 +63,13 @@ $autoload['packages'] = array(
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
+<<<<<<< HEAD
 $autoload['libraries'] = array('database', 'ion_auth', 'form_validation');
+=======
+
+$autoload['libraries'] = array('database', 'ion_auth', 'session');
+
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 
 /*
 | -------------------------------------------------------------------

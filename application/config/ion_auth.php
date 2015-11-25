@@ -22,7 +22,11 @@
 */
 
 /**
+<<<<<<< HEAD
  * Changes by CI Bootstrap 3 (https://github.com/waifung0207/ci_bootstrap_3).
+=======
+ * Notes from CI Bootstrap 3 (https://github.com/waifung0207/ci_bootstrap_3).
+>>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
  * 
  * The following values are changed to fit with CI Bootstrap:
  *  - $config['site_title'] = 'CI Bootstrap'; (default: 'Example.com')
