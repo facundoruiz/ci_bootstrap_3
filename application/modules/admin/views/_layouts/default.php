@@ -33,3 +33,19 @@
 	<?php $this->load->view('_partials/footer'); ?>
 
 </div>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+$( document ).on("click",".various",function(ev){
+	ev.preventDefault();
+	$this = $(this);
+	$.fancybox({
+		'width'				: '75%',
+		'height'			: '75%',
+		'type': 'iframe',
+  		'href': $this.attr('href')
+	});
+})
+});
+</script>

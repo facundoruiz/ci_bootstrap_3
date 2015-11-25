@@ -228,3 +228,21 @@ CREATE TABLE `users_groups` (
 INSERT INTO `users_groups` (`id`, `user_id`, `group_id`) VALUES ('1', '1', '1');
 
 
+#
+# TABLE STRUCTURE FOR: blog_images
+#
+
+DROP TABLE IF EXISTS `blog_images`;
+
+CREATE TABLE `blog_images` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(250) NOT NULL COLLATE 'utf8_unicode_ci',
+  `post_id` INT(11) NULL DEFAULT NULL,
+  `url` VARCHAR(250) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
+  `priority` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+COLLATE='utf8_unicode_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+;
