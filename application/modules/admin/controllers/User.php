@@ -12,6 +12,7 @@ class User extends Admin_Controller {
 	// Frontend User CRUD
 	public function index()
 	{
+<<<<<<< HEAD
 
 		$crud = $this->generate_crud('users');
 		$crud->columns('groups', 'username', 'email', 'first_name', 'last_name', 'active');
@@ -142,5 +143,12 @@ class User extends Admin_Controller {
 		$this->mPageTitle = 'Reset User Password';
 		$this->render('user/reset_password');
 
+=======
+		$crud = $this->crud->generate_crud('users');
+		$crud->columns('group_id', 'email', 'first_name', 'last_name', 'status', 'created_at');
+		
+		$this->mViewData['crud_data'] = $this->crud->render();		
+		$this->render('crud');
+>>>>>>> ignore files
 	}
 }
