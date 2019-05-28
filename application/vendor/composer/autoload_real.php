@@ -48,7 +48,6 @@ class ComposerAutoloaderInit320792ecc9a25e48b27e5e9cfcd2bf05
         return $loader;
     }
 }
-<<<<<<< HEAD
 
 function composerRequire320792ecc9a25e48b27e5e9cfcd2bf05($fileIdentifier, $file)
 {
@@ -58,5 +57,3 @@ function composerRequire320792ecc9a25e48b27e5e9cfcd2bf05($fileIdentifier, $file)
         $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
     }
 }
-=======
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
