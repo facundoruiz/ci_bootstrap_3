@@ -41,24 +41,14 @@
 	<?php if ( !empty($useful_links) ): ?>
 		<li class="header">USEFUL LINKS</li>
 		<?php foreach ($useful_links as $link): ?>
-<<<<<<< HEAD
 			<?php if ($this->ion_auth->in_group($link['auth']) ): ?>
-=======
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 			<li>
 				<a href="<?php echo starts_with($link['url'], 'http') ? $link['url'] : base_url($link['url']); ?>" target='<?php echo $link['target']; ?>'>
 					<i class="fa fa-circle-o <?php echo $link['color']; ?>"></i> <?php echo $link['name']; ?>
 				</a>
 			</li>
-<<<<<<< HEAD
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php endif; ?>
 
 </ul>
-=======
-		<?php endforeach; ?>
-	<?php endif; ?>
-
-</ul>
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'

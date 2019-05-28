@@ -17,8 +17,6 @@ $config['charset'] = 'utf-8';
 $config['mailtype'] = 'html';
 $config['wordwrap'] = TRUE;
 $config['newline'] = "\r\n";
-<<<<<<< HEAD
-=======
 
 // custom values from CI Bootstrap
 $config['from_email'] = "noreply@email.com";
@@ -30,4 +28,3 @@ $config['mailgun'] = array(
 	'domain'				=> '',
 	'private_api_key'		=> '',
 );
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'

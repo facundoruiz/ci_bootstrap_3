@@ -23,11 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-<<<<<<< HEAD
 $config['base_url'] = defined('BASE_URL') ? BASE_URL : '';
-=======
-$config['base_url'] = 'http://localhost/ci_bootstrap_3';
->>>>>>> ignore files
 
 /*
 |--------------------------------------------------------------------------

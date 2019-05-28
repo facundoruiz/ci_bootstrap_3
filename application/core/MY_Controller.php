@@ -42,11 +42,6 @@ class MY_Controller extends MX_Controller {
 	protected $mUser = NULL;
 	protected $mUserGroups = array();
 	protected $mUserMainGroup;
-<<<<<<< HEAD
-
-=======
-	
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	// Constructor
 	public function __construct()
 	{
@@ -136,7 +131,6 @@ class MY_Controller extends MX_Controller {
 			}
 		}
 
-<<<<<<< HEAD
 		$this->mConfig = $config;
 	}
 
@@ -150,25 +144,11 @@ class MY_Controller extends MX_Controller {
 
 			redirect($redirect_url);
 		}
-=======
-		// get user data if logged in
-		if ( $this->ion_auth->logged_in() )
-		{
-			$this->mUser = $this->ion_auth->user()->row();
-			$this->mUserGroups = $this->ion_auth->get_users_groups($this->mUser->id)->result();
-
-			// TODO: get group with most permissions (instead of getting first group)
-			$this->mUserMainGroup = $this->mUserGroups[0]->name;
-		}
-
-		$this->mSiteConfig = $site_config;
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	}
 
 	// Verify user authentication
 	// $group parameter can be name, ID, name array, ID array, or mixed array
 	// Reference: http://benedmunds.com/ion_auth/#in_group
-<<<<<<< HEAD
 	protected function verify_auth($group = 'members', $redirect_url = NULL)
 	{
 		if ( !$this->ion_auth->logged_in() || !$this->ion_auth->in_group($group) )
@@ -176,16 +156,10 @@ class MY_Controller extends MX_Controller {
 			if ( $redirect_url==NULL )
 				$redirect_url = $this->mConfig['login_url'];
 			
-=======
-	protected function verify_auth($group = 'members', $redirect_url = 'auth/login')
-	{
-		if ( !$this->ion_auth->logged_in() || !$this->ion_auth->in_group($group) )
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 			redirect($redirect_url);
 		}
 	}
 
-<<<<<<< HEAD
 	// Add script files, either append or prepend to $this->mScripts array
 	// ($files can be string or string array)
 	protected function add_script($files, $append = TRUE, $position = 'foot')
@@ -213,10 +187,6 @@ class MY_Controller extends MX_Controller {
 
 	// Render template
 	protected function render($view_file, $layout = 'default')
-=======
-	// Render template (using Plates template)
-	protected function render($view_file)
->>>>>>> Merge remote-tracking branch 'refs/remotes/waifung0207/master'
 	{
 		// automatically generate page title
 		if ( empty($this->mPageTitle) )
