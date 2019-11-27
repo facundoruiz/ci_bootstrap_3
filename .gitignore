@@ -11,7 +11,6 @@ node_modules/
 npm-debug.log
 
 ### Composer ###
-application/vendor/
 application/composer.lock
 
 ### https://github.com/github/gitignore/blob/master/CodeIgniter.gitignore ###
@@ -21,6 +20,9 @@ application/composer.lock
 */cache/*
 */cache/!index.html
 */cache/!.htaccess
+
+## Source map files (local gulp tasks will still produce .map for debug use) ###
+*.map
 
 ### SQL backup files ###
 sql/backup/*

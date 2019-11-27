@@ -1,175 +1,273 @@
 <?php
 
-class MY_Controller extends CI_Controller {
-
-	// Values and objects to be overrided or accessible from child controllers
-	protected $mSite = '';
-	protected $mSiteConfig = array();
-	protected $mBaseUrl = '';
-	protected $mBodyClass = '';
-	protected $mDefaultLayout = 'empty';
-	protected $mLanguage = '';
-	protected $mAvailableLanguages = '';
-	protected $mTitlePrefix = '';
-	protected $mTitle = '';
-	protected $mMetaData = array();
-	protected $mMenu = array();
-	protected $mBreadcrumb = array();
-
+/**
+ * Base controllers for different purposes
+ * 	- MY_Controller: for Frontend Website
+ * 	- Admin_Controller: for Admin Panel (require login), extends from MY_Controller
+ * 	- API_Controller: for API Site, extends from REST_Controller
+ */
+class MY_Controller extends MX_Controller {
+	
 	// Values to be obtained automatically from router
+	protected $mModule = '';			// module name (empty = Frontend Website)
 	protected $mCtrler = 'home';		// current controller
 	protected $mAction = 'index';		// controller function being called
 	protected $mMethod = 'GET';			// HTTP request method
 
-	// Scripts and stylesheets to be embedded on each page
-	protected $mStylesheets = array();
+	// Config values from config/ci_bootstrap.php
+	protected $mConfig = array();
+	protected $mBaseUrl = array();
+	protected $mSiteName = '';
+	protected $mMetaData = array();
 	protected $mScripts = array();
+	protected $mStylesheets = array();
+
+	// Values and objects to be overrided or accessible from child controllers
+	protected $mPageTitlePrefix = '';
+	protected $mPageTitle = '';
+	protected $mBodyClass = '';
+	protected $mMenu = array();
+	protected $mBreadcrumb = array();
+
+	// Multilingual
+	protected $mMultilingual = FALSE;
+	protected $mLanguage = 'en';
+	protected $mAvailableLanguages = array();
 
 	// Data to pass into views
 	protected $mViewData = array();
+
+	// Login user
+	protected $mPageAuth = array();
+	protected $mUser = NULL;
+	protected $mUserGroups = array();
+	protected $mUserMainGroup;
 
 	// Constructor
 	public function __construct()
 	{
 		parent::__construct();
 
+		// router info
+		$this->mModule = $this->router->fetch_module();
 		$this->mCtrler = $this->router->fetch_class();
 		$this->mAction = $this->router->fetch_method();
 		$this->mMethod = $this->input->server('REQUEST_METHOD');
 		
-		$this->mScripts['head'] = array();		// for scripts that need to be loaded from the start
-		$this->mScripts['foot'] = array();		// for scripts that can be loaded after page render
-
-		// Initial setup
+		// initial setup
 		$this->_setup();
+	}
 
-		// (optional) enable profiler
-		if (ENVIRONMENT=='development')
+	// Setup values from file: config/ci_bootstrap.php
+	private function _setup()
+	{
+		$config = $this->config->item('ci_bootstrap');
+		
+		// load default values
+		$this->mBaseUrl = empty($this->mModule) ? base_url() : base_url($this->mModule).'/';
+		$this->mSiteName = empty($config['site_name']) ? '' : $config['site_name'];
+		$this->mPageTitlePrefix = empty($config['page_title_prefix']) ? '' : $config['page_title_prefix'];
+		$this->mPageTitle = empty($config['page_title']) ? '' : $config['page_title'];
+		$this->mBodyClass = empty($config['body_class']) ? '' : $config['body_class'];
+		$this->mMenu = empty($config['menu']) ? array() : $config['menu'];
+		$this->mMetaData = empty($config['meta_data']) ? array() : $config['meta_data'];
+		$this->mScripts = empty($config['scripts']) ? array() : $config['scripts'];
+		$this->mStylesheets = empty($config['stylesheets']) ? array() : $config['stylesheets'];
+		$this->mPageAuth = empty($config['page_auth']) ? array() : $config['page_auth'];
+
+		// multilingual setup
+		$lang_config = empty($config['languages']) ? array() : $config['languages'];
+		if ( !empty($lang_config) )
 		{
-			//$this->output->enable_profiler(TRUE);
+			$this->mMultilingual = TRUE;
+			$this->load->helper('language');
+
+			// redirect to Home page in default language
+			if ( empty($this->uri->segment(1)) )
+			{
+				$home_url = base_url($lang_config['default']).'/';
+				redirect($home_url);
+			}
+
+			// get language from URL, or from config's default value (in ci_bootstrap.php)
+			$this->mAvailableLanguages = $lang_config['available'];
+			$language = array_key_exists($this->uri->segment(1), $this->mAvailableLanguages) ? $this->uri->segment(1) : $lang_config['default'];
+
+			// append to base URL
+			$this->mBaseUrl.= $language.'/';
+
+			// autoload language files
+			foreach ($lang_config['autoload'] as $file)
+				$this->lang->load($file, $this->mAvailableLanguages[$language]['value']);
+
+			$this->mLanguage = $language;
+		}
+		
+		// restrict pages
+		$uri = ($this->mAction=='index') ? $this->mCtrler : $this->mCtrler.'/'.$this->mAction;
+		if ( !empty($this->mPageAuth[$uri]) && !$this->ion_auth->in_group($this->mPageAuth[$uri]) )
+		{
+			$page_404 = $this->router->routes['404_override'];
+			$redirect_url = empty($this->mModule) ? $page_404 : $this->mModule.'/'.$page_404;
+			redirect($redirect_url);
+		}
+
+		// push first entry to breadcrumb
+		if ($this->mCtrler!='home')
+		{
+			$page = $this->mMultilingual ? lang('home') : 'Home';
+			$this->push_breadcrumb($page, '');
+		}
+
+		// get user data if logged in
+		if ( $this->ion_auth->logged_in() )
+		{
+			$this->mUser = $this->ion_auth->user()->row();
+			if ( !empty($this->mUser) )
+			{
+				$this->mUserGroups = $this->ion_auth->get_users_groups($this->mUser->id)->result();
+
+				// TODO: get group with most permissions (instead of getting first group)
+				$this->mUserMainGroup = $this->mUserGroups[0]->name;	
+			}
+		}
+
+		$this->mConfig = $config;
+		
+		// fix usage of MY_Form_validation in HMVC structure
+		$this->form_validation->CI =& $this;
+	}
+
+	// Verify user login (regardless of user group)
+	protected function verify_login($redirect_url = NULL)
+	{
+		if ( !$this->ion_auth->logged_in() )
+		{
+			if ( $redirect_url==NULL )
+				$redirect_url = $this->mConfig['login_url'];
+
+			redirect($redirect_url);
 		}
 	}
-	
-	// Output template for Frontend Website
-	protected function _render($view, $layout = '')
-	{
-		$this->mViewData['base_url'] = $this->mBaseUrl;
-		$this->mViewData['inner_view'] = $this->mSite.'/'.$view;
-		$this->mViewData['body_class'] = $this->mBodyClass;
 
-		$this->mViewData['site'] = $this->mSite;
+	// Verify user authentication
+	// $group parameter can be name, ID, name array, ID array, or mixed array
+	// Reference: http://benedmunds.com/ion_auth/#in_group
+	protected function verify_auth($group = 'members', $redirect_url = NULL)
+	{
+		if ( !$this->ion_auth->logged_in() || !$this->ion_auth->in_group($group) )
+		{
+			if ( $redirect_url==NULL )
+				$redirect_url = $this->mConfig['login_url'];
+			
+			redirect($redirect_url);
+		}
+	}
+
+	// Add script files, either append or prepend to $this->mScripts array
+	// ($files can be string or string array)
+	protected function add_script($files, $append = TRUE, $position = 'foot')
+	{
+		$files = is_string($files) ? array($files) : $files;
+		$position = ($position==='head' || $position==='foot') ? $position : 'foot';
+
+		if ($append)
+			$this->mScripts[$position] = array_merge($this->mScripts[$position], $files);
+		else
+			$this->mScripts[$position] = array_merge($files, $this->mScripts[$position]);
+	}
+
+	// Add stylesheet files, either append or prepend to $this->mStylesheets array
+	// ($files can be string or string array)
+	protected function add_stylesheet($files, $append = TRUE, $media = 'screen')
+	{
+		$files = is_string($files) ? array($files) : $files;
+
+		if ($append)
+			$this->mStylesheets[$media] = array_merge($this->mStylesheets[$media], $files);
+		else
+			$this->mStylesheets[$media] = array_merge($files, $this->mStylesheets[$media]);
+	}
+
+	// Render template
+	protected function render($view_file, $layout = 'default')
+	{
+		// automatically generate page title
+		if ( empty($this->mPageTitle) )
+		{
+			if ($this->mAction=='index')
+				$this->mPageTitle = humanize($this->mCtrler);
+			else
+				$this->mPageTitle = humanize($this->mAction);
+		}
+
+		$this->mViewData['module'] = $this->mModule;
 		$this->mViewData['ctrler'] = $this->mCtrler;
 		$this->mViewData['action'] = $this->mAction;
 
-		$this->mViewData['current_uri'] = ($this->mSite==='frontend') ? uri_string(): str_replace($this->mSite.'/', '', uri_string());
-		$this->mViewData['stylesheets'] = $this->mStylesheets;
+		$this->mViewData['site_name'] = $this->mSiteName;
+		$this->mViewData['page_title'] = $this->mPageTitlePrefix.$this->mPageTitle;
+		$this->mViewData['current_uri'] = empty($this->mModule) ? uri_string(): str_replace($this->mModule.'/', '', uri_string());
+		$this->mViewData['meta_data'] = $this->mMetaData;
 		$this->mViewData['scripts'] = $this->mScripts;
-		$this->mViewData['breadcrumb'] = $this->mBreadcrumb;
-		$this->mViewData['menu'] = $this->mMenu;
-		$this->mViewData['meta'] = $this->mMetaData;
-		$this->mViewData['title'] = $this->mTitlePrefix.$this->mTitle;
+		$this->mViewData['stylesheets'] = $this->mStylesheets;
+		$this->mViewData['page_auth'] = $this->mPageAuth;
 
-		// load view files
-		$layout = empty($layout) ? $this->mDefaultLayout : $layout;
-		$this->load->view('common/head', $this->mViewData);
-		$this->load->view('layouts/'.$layout, $this->mViewData);
-		$this->load->view('common/foot', $this->mViewData);
+		$this->mViewData['base_url'] = $this->mBaseUrl;
+		$this->mViewData['menu'] = $this->mMenu;
+		$this->mViewData['user'] = $this->mUser;
+		$this->mViewData['ga_id'] = empty($this->mConfig['ga_id']) ? '' : $this->mConfig['ga_id'];
+		$this->mViewData['body_class'] = $this->mBodyClass;
+
+		// automatically push current page to last record of breadcrumb
+		$this->push_breadcrumb($this->mPageTitle);
+		$this->mViewData['breadcrumb'] = $this->mBreadcrumb;
+
+		// multilingual
+		$this->mViewData['multilingual'] = $this->mMultilingual;
+		if ($this->mMultilingual)
+		{
+			$this->mViewData['available_languages'] = $this->mAvailableLanguages;
+			$this->mViewData['language'] = $this->mLanguage;
+		}
+
+		// debug tools - CodeIgniter profiler
+		$debug_config = $this->mConfig['debug'];
+		if (ENVIRONMENT==='development' && !empty($debug_config))
+		{
+			$this->output->enable_profiler($debug_config['profiler']);
+		}
+
+		$this->mViewData['inner_view'] = $view_file;
+		$this->load->view('_base/head', $this->mViewData);
+		$this->load->view('_layouts/'.$layout, $this->mViewData);
+
+		// debug tools - display view data
+		if (ENVIRONMENT==='development' && !empty($debug_config) && !empty($debug_config['view_data']))
+		{
+			$this->output->append_output('<hr/>'.print_r($this->mViewData, TRUE));
+		}
+
+		$this->load->view('_base/foot', $this->mViewData);
 	}
-	
+
 	// Output JSON string
-	protected function _render_json($data)
+	protected function render_json($data, $code = 200)
 	{
 		$this->output
+			->set_status_header($code)
 			->set_content_type('application/json')
 			->set_output(json_encode($data));
-	}
-
-	// Setup for different sites
-	private function _setup()
-	{
-		// called at first so config/sites.php can contains lang() function
-		$this->_setup_language();
-
-		// get site-specific configuration from file "application/config/sites.php"
-		$this->config->load('sites');
-		$config = $this->config->item('sites')[$this->mSite];
-
-		// setup autoloading (libraries, helpers, models, language files, etc.)
-		if ( !empty($config['autoload']) )
-			$this->_setup_autoload($config['autoload']);
-
-		// setup metadata
-		if ( !empty($config['meta']) )
-			$this->_setup_meta($config['meta']);
-
-		// setup assets (stylesheets, scripts)
-		if ( !empty($config['assets']) )
-		{
-			$this->mStylesheets = $config['assets']['stylesheets'];
-			$this->mScripts['head'] = $config['assets']['scripts_head'];
-			$this->mScripts['foot'] = $config['assets']['scripts_foot'];	
-		}
-
-		// setup menu
-		if ( !empty($config['menu']) )
-			$this->mMenu = $config['menu'];
-
-		$this->mSiteConfig = $config;
-	}
-
-	// Setup localization
-	private function _setup_language()
-	{
-		// language settings from: application/config/language.php
-		$this->config->load('language');
-		$config = $this->config->item('site_languages')[$this->mSite];	
-
-		// default language from config (NOT the one from CodeIgniter: application/config/config.php)
-		$this->mLanguage = $this->session->has_userdata('language') ? $this->session->userdata('language') : $config['default'];
-		
-		if ( !empty($config['enabled']) )
-		{
-			$this->mAvailableLanguages = $config['available'];
-
-			foreach ($config['autoload'] as $file)
-				$this->lang->load($file, $this->mAvailableLanguages[$this->mLanguage]['value']);
-
-			$this->mViewData['available_languages'] = $this->mAvailableLanguages;
-		}
-
-		$this->mViewData['language'] = $this->mLanguage;
-	}
-
-	// Setup autoloading
-	private function _setup_autoload($config)
-	{
-		foreach ($config['libraries'] as $file)
-		{
-			if ($file==='database')
-				$this->load->database();
-			else
-				$this->load->library($file);
-		}
-		
-		foreach ($config['helpers'] as $file)
-			$this->load->helper($file);
-
-		foreach ($config['models'] as $file => $alias)
-			$this->load->model($file, $alias);
-	}
-
-	// Setup metadata
-	private function _setup_meta($config)
-	{
-		$this->mTitlePrefix = empty($config['title_prefix']) ? '' : $config['title_prefix'];
-		
-		foreach ($config['custom'] as $key => $value)
-			$this->mMetaData[$key] = $value;
+			
+		// force output immediately and interrupt other scripts
+		global $OUT;
+		$OUT->_display();
+		exit;
 	}
 
 	// Add breadcrumb entry
 	// (Link will be disabled when it is the last entry, or URL set as '#')
-	protected function _push_breadcrumb($name, $url = '#', $append = TRUE)
+	protected function push_breadcrumb($name, $url = '#', $append = TRUE)
 	{
 		$entry = array('name' => $name, 'url' => $url);
 
@@ -180,98 +278,6 @@ class MY_Controller extends CI_Controller {
 	}
 }
 
-
-/**
- * Base controller for Frontend Website
- */
-class Frontend_Controller extends MY_Controller {
-
-	protected $mSite = 'frontend';
-	protected $mDefaultLayout = 'frontend_default';
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->mBaseUrl = site_url();
-		$this->_push_breadcrumb('Home', '', FALSE);
-	}
-}
-
-
-/**
- * Base controller for Admin Panel
- */
-class Admin_Controller extends MY_Controller {
-
-	// override parent values
-	protected $mSite = 'admin';
-	protected $mDefaultLayout = 'admin_default';
-
-	// values for Admin Panel only
-	protected $mUser = array();
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->mBaseUrl = site_url($this->mSite).'/';
-		$this->_push_breadcrumb('Admin Panel', '', FALSE);
-
-		if ($this->mCtrler!='login')
-		{
-			// Check with user login
-			$this->_verify_auth();
-		}
-	}
-
-	// Override parent
-	protected function _render($view, $layout = '')
-	{
-		$this->mBodyClass = ($this->mCtrler=='login') ? 'login-page' : 'skin-purple';
-		parent::_render($view, $layout);
-	}
-
-	// Verify authentication
-	private function _verify_auth()
-	{
-		// obtain user data from session; redirect to Login page if not found
-		if ($this->session->has_userdata('admin_user'))
-			$this->mUser = $this->session->userdata('admin_user');
-		else
-			redirect('admin/login');
-	}
-
-	// Verify if the login user belongs to target role
-	// $role can be string or string array
-	protected function _verify_role($role)
-	{
-		if ( empty($this->mUser) )
-			redirect('admin/login');
-
-		$pass = is_array($role) ? in_array($this->mUser->role, $role) : ($this->mUser->role==$role);
-		
-		if (!$pass)
-			redirect('admin');
-	}
-}
-
-
-/**
- * Base controller for API Site
- */
-class Api_Controller extends MY_Controller {
-
-	protected $mSite = 'api';
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->mBaseUrl = site_url($this->mSite).'/';
-		$this->_verify_auth();
-	}
-
-	// Verify authentication
-	private function _verify_auth()
-	{
-		// to be completed
-	}
-}
+// include base controllers
+require APPPATH."core/controllers/Admin_Controller.php";
+require APPPATH."core/controllers/Api_Controller.php";
